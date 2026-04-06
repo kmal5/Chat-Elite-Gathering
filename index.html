@@ -1,150 +1,246 @@
-<!<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Elite Gathering Empire</title>
+    <title>إمبراطورية تجمع النخبة</title>
     <style>
-        :root { --gold: #ffb300; --royal: #1a237e; --bg: #080808; }
-        * { box-sizing: border-box; }
-        body { background: var(--bg); color: #fff; font-family: sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        /* التنسيق العام للموقع */
+        :root {
+            --gold: #ffb300;
+            --royal-blue: #1a237e;
+            --bg-dark: #080808;
+            --msg-bg: #121212;
+        }
 
-        /* القائمة الجانبية للغرف - نفس المواصفات */
-        .sidebar { width: 70px; background: #000; border-left: 1px solid #222; display: flex; flex-direction: column; align-items: center; padding-top: 15px; gap: 15px; }
-        .room { width: 50px; height: 50px; background: #1a1a1a; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 2px solid transparent; cursor: pointer; }
-        .room.active { border-color: var(--gold); box-shadow: 0 0 10px var(--gold); }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-        .main { flex: 1; display: flex; flex-direction: column; }
+        body {
+            background-color: var(--bg-dark);
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* القائمة الجانبية (الأعلام) */
+        .sidebar {
+            width: 75px;
+            background-color: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+            gap: 20px;
+            border-left: 1px solid #222;
+        }
+
+        .room-btn {
+            width: 50px;
+            height: 50px;
+            background: #1a1a1a;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: 0.3s;
+        }
+
+        .room-btn.active {
+            border-color: var(--gold);
+            box-shadow: 0 0 15px rgba(255, 179, 0, 0.4);
+        }
+
+        .room-btn:hover { background: #222; }
+
+        /* المنطقة الرئيسية */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
 
         /* الهيدر العلوي */
-        .header { background: #111; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; }
-        .title { color: var(--gold); font-weight: bold; font-size: 18px; display: flex; align-items: center; gap: 5px; }
-        .stats { display: flex; gap: 10px; font-size: 13px; color: var(--gold); }
+        .header {
+            background: #111;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #222;
+        }
 
-        /* منطقة الرسايل بالرتب */
-        #chat-box { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; background: #050505; }
-        .msg { background: #121212; border-radius: 10px; padding: 10px; border-right: 4px solid var(--gold); max-width: 90%; }
-        .msg-info { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
-        .name { font-weight: bold; font-size: 14px; }
-        .rank { background: var(--royal); font-size: 10px; padding: 2px 6px; border-radius: 4px; }
-        .text { color: #ccc; font-size: 15px; }
+        .header .title {
+            color: var(--gold);
+            font-weight: bold;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-        /* صندوق الكتابة السفلي - نفس الصور */
-        .footer { background: #111; padding: 10px 15px; display: flex; align-items: center; gap: 12px; border-top: 1px solid #222; }
-        .input-in { flex: 1; background: #1a1a1a; border: 1px solid #333; border-radius: 25px; padding: 10px 18px; color: #fff; outline: none; }
-        .send-btn { background: var(--gold); color: #000; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-weight: bold; font-size: 18px; }
+        .header .stats {
+            font-size: 13px;
+            color: var(--gold);
+            display: flex;
+            gap: 10px;
+        }
+
+        /* منطقة الدردشة والرسائل */
+        #chat-screen {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: #050505;
+        }
+
+        .message-box {
+            background: var(--msg-bg);
+            padding: 12px;
+            border-radius: 10px;
+            border-right: 4px solid var(--gold);
+            max-width: 90%;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .msg-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 5px;
+        }
+
+        .user-name { font-weight: bold; font-size: 14px; color: #fff; }
+
+        .rank-tag {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .rank-dev { background: var(--royal-blue); }
+        .rank-vip { background: #c0392b; }
+
+        .msg-text { color: #ddd; font-size: 15px; line-height: 1.4; }
+
+        /* صندوق الكتابة السفلي */
+        .chat-footer {
+            background: #111;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-top: 1px solid #222;
+        }
+
+        .input-box {
+            flex: 1;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 25px;
+            padding: 12px 20px;
+            color: #fff;
+            outline: none;
+            font-size: 15px;
+        }
+
+        .input-box:focus { border-color: var(--gold); }
+
+        .send-btn {
+            background: var(--gold);
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .send-btn:active { transform: scale(0.9); }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
-        <div class="room active">🇩🇿</div>
-        <div class="room">🇹🇳</div>
-        <div class="room">🇲🇦</div>
-        <div style="color: #444; font-size: 28px;">+</div>
+        <div class="room-btn active">🇩🇿</div>
+        <div class="room-btn">🇹🇳</div>
+        <div class="room-btn">🇲🇦</div>
+        <div style="color: #444; font-size: 30px; cursor: pointer;">+</div>
     </div>
 
-    <div class="main">
+    <div class="main-content">
         <div class="header">
-            <div class="title">👑 Elite Gathering</div>
-            <div class="stats">💎 1,500 | 👤 124</div>
+            <div class="title">👑 تجمع النخبة</div>
+            <div class="stats">👤 124 | 💎 1,500</div>
         </div>
 
-        <div id="chat-box">
-            <div class="msg">
-                <div class="msg-info">
-                    <span class="name">Faisal</span>
-                    <span class="rank">المطور</span>
+        <div id="chat-screen">
+            <div class="message-box">
+                <div class="msg-header">
+                    <span class="user-name">Faisal</span>
+                    <span class="rank-tag rank-dev">المطور</span>
                 </div>
-                <div class="text">تم تحديث النظام.. جرب الكتابة الآن يا بطل!</div>
+                <div class="msg-text">أهلاً بك يا بطل في شاتك الخاص.. جرب الآن واكتب رسالة بالأسفل!</div>
             </div>
         </div>
 
-        <div class="footer">
-            <div style="color:var(--gold); font-size:24px;">⊕</div>
-            <input type="text" id="inp" placeholder="اكتب رسالتك هنا..." autocomplete="off">
-            <button class="send-btn" onclick="send()">➤</button>
+        <div class="chat-footer">
+            <div style="color: var(--gold); font-size: 24px; cursor: pointer;">⊕</div>
+            <input type="text" id="messageInput" placeholder="اكتب رسالتك هنا..." autocomplete="off">
+            <button class="send-btn" onclick="handleSend()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="black"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+            </button>
         </div>
     </div>
 
     <script>
-        function send() {
-            const i = document.getElementById('inp');
-            const c = document.getElementById('chat-box');
-            if(i.value.trim() !== "") {
-                const d = document.createElement('div');
-                d.className = 'msg';
-                d.innerHTML = `
-                    <div class="msg
-DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Elite Gathering</title>
-    <style>
-        :root { --gold: #ffb300; --bg: #080808; }
-        body { background: var(--bg); color: #fff; font-family: sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; }
-        
-        /* القائمة الجانبية - اجعل الأزرار قابلة للضغط */
-        .sidebar { width: 70px; background: #000; display: flex; flex-direction: column; align-items: center; padding-top: 15px; gap: 15px; border-left: 1px solid #222; }
-        .room { width: 50px; height: 50px; background: #1a1a1a; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 2px solid transparent; cursor: pointer; transition: 0.3s; }
-        .room:active { transform: scale(0.9); background: var(--gold); }
-        .room.active { border-color: var(--gold); box-shadow: 0 0 10px var(--gold); }
+        const chatScreen = document.getElementById('chat-screen');
+        const messageInput = document.getElementById('messageInput');
 
-        .main { flex: 1; display: flex; flex-direction: column; }
-        .header { background: #111; padding: 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; }
-        .title { color: var(--gold); font-weight: bold; }
-
-        /* منطقة الرسائل - اجعلها تتحرك */
-        #chat-box { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .msg { background: #121212; border-radius: 10px; padding: 12px; border-right: 4px solid var(--gold); animation: slideIn 0.3s ease; }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
-
-        .footer { background: #111; padding: 10px; display: flex; gap: 10px; align-items: center; border-top: 1px solid #222; }
-        input { flex: 1; background: #1a1a1a; border: 1px solid #333; border-radius: 25px; padding: 10px 15px; color: #fff; outline: none; }
-        .send-btn { background: var(--gold); border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 18px; }
-    </style>
-</head>
-<body>
-
-    <div class="sidebar">
-        <div class="room active" onclick="alert('أنت في غرفة الجزائر')">🇩🇿</div>
-        <div class="room" onclick="alert('غرفة تونس قريباً')">🇹🇳</div>
-        <div class="room" onclick="alert('غرفة المغرب قريباً')">🇲🇦</div>
-    </div>
-
-    <div class="main">
-        <div class="header">
-            <div class="title">👑 Elite Gathering</div>
-            <div style="font-size: 12px;">👤 124 | 💎 1,500</div>
-        </div>
-
-        <div id="chat-box">
-            <div class="msg"><b>Faisal (المطور):</b> الشات الآن شغال.. جرب تكتب تحت!</div>
-        </div>
-
-        <div class="footer">
-            <input type="text" id="inp" placeholder="اكتب رسالتك هنا...">
-            <button class="send-btn" onclick="sendMsg()">➤</button>
-        </div>
-    </div>
-
-    <script>
-        function sendMsg() {
-            const inp = document.getElementById('inp');
-            const box = document.getElementById('chat-box');
-            if(inp.value.trim() !== "") {
-                const div = document.createElement('div');
-                div.className = 'msg';
-                div.innerHTML = `<b>فيصل:</b> ${inp.value}`;
-                box.appendChild(div);
-                inp.value = "";
-                box.scrollTop = box.scrollHeight; // عشان ينزل لآخر رسالة تلقائياً
+        function handleSend() {
+            const text = messageInput.value.trim();
+            if (text !== "") {
+                const newMsg = document.createElement('div');
+                newMsg.className = 'message-box';
+                newMsg.innerHTML = `
+                    <div class="msg-header">
+                        <span class="user-name">فيصل</span>
+                        <span class="rank-tag rank-vip">VIP</span>
+                    </div>
+                    <div class="msg-text">${text}</div>
+                `;
+                chatScreen.appendChild(newMsg);
+                messageInput.value = "";
+                // النزول لآخر رسالة تلقائياً
+                chatScreen.scrollTop = chatScreen.scrollHeight;
             }
         }
-        // إرسال بالضغط على Enter
-        document.getElementById('inp').addEventListener("keypress", (e) => { if(e.key === "Enter") sendMsg(); });
+
+        // إرسال عند ضغط زر Enter
+        messageInput.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                handleSend();
+            }
+        });
     </script>
+
 </body>
 </html>
