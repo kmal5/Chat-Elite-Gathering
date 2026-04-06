@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat Elite Gathering</title>
+    <style>
+        body { background-color: #121212; color: #cfd8dc; font-family: sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; }
+        .fb-header { background: #1e1e1e; padding: 15px; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: space-between; }
+        .project-title { color: #ffa000; font-weight: bold; font-size: 18px; }
+        #dataContainer { flex: 1; overflow-y: auto; padding: 20px; background: #000; }
+        .doc-card { background: #1e1e1e; border: 1px solid #424242; border-radius: 8px; margin-bottom: 15px; padding: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .field { display: flex; margin-bottom: 8px; font-size: 14px; }
+        .field-name { color: #81d4fa; min-width: 100px; font-weight: bold; }
+        .field-value { color: #fff; border-right: 2px solid #444; padding-left: 10px; margin-left: 10px; }
+        .input-section { background: #1e1e1e; padding: 20px; border-top: 2px solid #ffa000; display: flex; gap: 10px; }
+        input { flex: 1; background: #263238; border: 1px solid #444; color: #fff; padding: 12px; border-radius: 4px; outline: none; }
+        button { background: #ffa000; color: #000; border: none; padding: 10px 30px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="fb-header">
+    <div class="project-title">Chat Elite Gathering > Firestore Database</div>
+    <div style="font-size: 12px; color: #78909c;">Admin: Faisal</div>
+</div>
+
+<div id="dataContainer"></div>
+
+<div class="input-section">
+    <input type="text" id="msgInput" placeholder="+ إضافة مستند جديد">
+    <button id="sendBtn">إرسال</button>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyD5ZOLVpiyBZsfNp9qhkPt0ST5KcFlIwuo",
+    authDomain: "chat-elite-gathering.firebaseapp.com",
+    projectId: "chat-elite-gathering",
+    storageBucket: "chat-elite-gathering.firebasestorage.app",
+    messagingSenderId: "555680069709",
+    appId: "1:555680069709:web:8dd330d860eef9a157c404"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const colRef = collection(db, "messages");
+
+  document.getElementById('sendBtn').onclick = async () => {
+    const val = document.getElementById('msgInput').value;
+    if(val.trim() !== "") {
+      await addDoc(colRef, {
+        sender: "Faisal",
+        content: val,
+        timestamp: serverTimestamp()
+      });
+      document.getElementById('msgInput').value = "";
+    }
+  };
+
+  const q = query(colRef, orderBy("timestamp", "asc"));
+  onSnapshot(q, (snapshot) => {
+    const container = document.getElementById('dataContainer');
+    container.innerHTML = "";
+    snapshot.forEach((doc) => {
+      const data = doc.data();
+      const card = document.createElement('div');
+      card.className = 'doc-card';
+      card.innerHTML = '<div style="color:#90a4ae; font-size:11px; margin-bottom:10px">ID: ' + doc.id + '</div>' +
+                       '<div class="field"><span class="field-name">platform:</span><span class="field-value">"Chat Elite Gathering"</span></div>' +
+                       '<div class="field"><span class="field-name">sender:</span><span class="field-value">"' + data.sender + '"</span></div>' +
+                       '<div class="field"><span class="field-name">content:</span><span class="field-value">"' + data.content + '"</span></div>';
+      container.appendChild(card);
+    });
+    container.scrollTop = container.scrollHeight;
+  });
+</script>
+
+</body>
+</html>
